@@ -2,12 +2,9 @@
 <html lang="pt-BR">
 
 <head>
-
 <meta charset="UTF-8">
 <title>Consulta de Progressão Docente</title>
-
 <link rel="stylesheet" href="style.css">
-
 </head>
 
 <body>
@@ -16,32 +13,47 @@
 
 <div class="container">
 
-<label>Digite sua matrícula SIAPE</label>
+<label>Matrícula SIAPE</label>
+<input id="siape" type="text" placeholder="Digite sua matrícula">
 
-<input id="siape" type="text" placeholder="Ex: 1234567">
+<label>
+<input type="checkbox" id="temAfastamento" onchange="toggleAfastamento()">
+Possuo afastamentos que interrompem o interstício
+</label>
 
-<button onclick="consultar()">Consultar</button>
+<div id="areaAfastamento" style="display:none">
+
+<h3>Afastamento</h3>
+
+<label>Tipo de afastamento</label>
+
+<select id="tipoAfastamento">
+
+<option value="">Selecione</option>
+
+<option>Licença para tratar de interesses particulares</option>
+<option>Licença para atividade política</option>
+<option>Licença para acompanhar cônjuge</option>
+<option>Afastamento sem remuneração</option>
+<option>Suspensão disciplinar</option>
+
+</select>
+
+<label>Data início</label>
+<input type="date" id="dataInicioAfastamento">
+
+<label>Data fim</label>
+<input type="date" id="dataFimAfastamento">
+
+</div>
+
+<button onclick="consultar()">Consultar progressão</button>
 
 </div>
 
 <div id="resultado"></div>
 
-<div class="info">
-
-<h3>Regras de progressão</h3>
-
-<ul>
-
-<li>A1 → B1: interstício de 36 meses (estágio probatório)</li>
-
-<li>Demais progressões: interstício de 24 meses</li>
-
-</ul>
-
-</div>
-
 <script src="script.js"></script>
 
 </body>
-
 </html>
