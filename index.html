@@ -1,180 +1,204 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Consulta de Progressão Docente</title>
+let dados = [];
+let afastamentos = [];
 
-<style>
-body{
-    font-family: Arial;
-    margin:40px;
-}
+const carreira = [
+"A-001","A-002",
+"B-001","B-002",
+"C-001","C-002","C-003","C-004",
+"D-001","D-002","D-003","D-004"
+];
 
-.container{
-    max-width:700px;
-}
+function criarDataLocal(dataString){
 
-.resultado{
-    margin-top:20px;
-    padding:15px;
-    border:1px solid #ccc;
-}
+const partes = dataString.split("-");
 
-.legenda{
-    margin-top:20px;
-    font-size:14px;
-    background:#f5f5f5;
-    padding:10px;
-}
-
-button{
-    padding:8px 15px;
-    margin-top:10px;
-}
-
-input{
-    padding:5px;
-    margin-top:5px;
-}
-</style>
-
-<script>
-
-function consultar(){
-
-let dataUltima = document.getElementById("ultima").value;
-let afastInicio = document.getElementById("afastInicio").value;
-let afastFim = document.getElementById("afastFim").value;
-let nivel = document.getElementById("nivel").value;
-
-if(!dataUltima){
-alert("Informe a data da última progressão");
-return;
-}
-
-let data = new Date(dataUltima+"T00:00:00");
-
-let intervalo = 24;
-
-if(nivel === "A-001"){
-intervalo = 36;
-}
-
-let diasAfastamento = 0;
-
-if(afastInicio && afastFim){
-
-let inicio = new Date(afastInicio+"T00:00:00");
-let fim = new Date(afastFim+"T00:00:00");
-
-let diff = fim - inicio;
-
-diasAfastamento = Math.floor(diff/(1000*60*60*24));
-}
-
-let resultado = "<b>Nível atual:</b> "+nivel+"<br><br>";
-resultado += "<b>Próximas progressões:</b><br>";
-
-for(let i=1;i<=5;i++){
-
-let novaData = new Date(data);
-
-novaData.setMonth(novaData.getMonth() + intervalo*i);
-
-novaData.setDate(novaData.getDate() + diasAfastamento);
-
-let dia = novaData.getDate().toString().padStart(2,'0');
-let mes = (novaData.getMonth()+1).toString().padStart(2,'0');
-let ano = novaData.getFullYear();
-
-resultado += i+"ª Progressão: "+dia+"/"+mes+"/"+ano+"<br>";
+return new Date(partes[0], partes[1]-1, partes[2]);
 
 }
 
-document.getElementById("resultado").innerHTML = resultado;
+async function carregarDados(){
+
+const resposta = await fetch("dados.csv");
+
+const texto = await resposta.text();
+
+const linhas = texto.trim().split("\n");
+
+const cabecalho = linhas[0].split(",");
+
+for(let i=1;i<linhas.length;i++){
+
+const valores = linhas[i].split(",");
+
+let registro = {};
+
+cabecalho.forEach((campo,index)=>{
+
+registro[campo.trim()] = valores[index].trim();
+
+});
+
+dados.push(registro);
+
+}
+
+}
+
+async function iniciar(){
+
+await carregarDados();
+
+document.getElementById("btnConsultar").addEventListener("click", consultar);
+
+document.getElementById("btnAddAfastamento").addEventListener("click", adicionarAfastamento);
+
+document.getElementById("btnNovaConsulta").addEventListener("click", novaConsulta);
 
 }
 
 function novaConsulta(){
 
-document.getElementById("ultima").value="";
-document.getElementById("afastInicio").value="";
-document.getElementById("afastFim").value="";
-document.getElementById("nivel").value="A-001";
-
 document.getElementById("resultado").innerHTML="";
+
+document.getElementById("siape").value="";
+
+afastamentos=[];
+
+atualizarLista();
 
 }
 
-</script>
+function adicionarAfastamento(){
 
-</head>
+let inicio = new Date(document.getElementById("inicio").value);
+let fim = new Date(document.getElementById("fim").value);
 
-<body>
+if(!inicio || !fim) return;
 
-<div class="container">
+afastamentos.push({inicio,fim});
 
-<h2>Consulta de Progressão Docente</h2>
+atualizarLista();
 
-<label>Data da Última Progressão:</label><br>
-<input type="date" id="ultima"><br><br>
+}
 
-<label>Nível Atual:</label><br>
+function atualizarLista(){
 
-<select id="nivel">
-<option>A-001</option>
-<option>A-002</option>
-<option>A-003</option>
-<option>A-004</option>
-<option>B-001</option>
-<option>B-002</option>
-<option>B-003</option>
-<option>B-004</option>
-<option>C-001</option>
-<option>C-002</option>
-<option>C-003</option>
-<option>C-004</option>
-<option>D-001</option>
-<option>D-002</option>
-<option>D-003</option>
-<option>D-004</option>
-<option>E-001</option>
-<option>E-002</option>
-<option>E-003</option>
-<option>E-004</option>
-</select>
+let lista = document.getElementById("listaAfastamentos");
 
-<br><br>
+lista.innerHTML="";
 
-<h4>Afastamentos (se houver)</h4>
+afastamentos.forEach((a,index)=>{
 
-<label>Data início:</label><br>
-<input type="date" id="afastInicio"><br>
+let li=document.createElement("li");
 
-<label>Data fim:</label><br>
-<input type="date" id="afastFim"><br><br>
+li.innerHTML=
 
-<button onclick="consultar()">Consultar</button>
-<button onclick="novaConsulta()">Nova Consulta</button>
+a.inicio.toLocaleDateString()+" até "+a.fim.toLocaleDateString()+
+" <button onclick='removerAfastamento("+index+")'>remover</button>";
 
-<div class="resultado" id="resultado"></div>
+lista.appendChild(li);
 
-<div class="legenda">
+});
 
-<b>Afastamentos que interrompem a contagem de tempo para progressão:</b>
+document.getElementById("totalAfastamento").innerText=
 
-<ul>
-<li>Licença para tratar de interesses particulares</li>
-<li>Licença para atividade política</li>
-<li>Afastamento para mandato eletivo</li>
-<li>Afastamento para acompanhar cônjuge</li>
-<li>Suspensão disciplinar</li>
-<li>Outros afastamentos sem efetivo exercício</li>
-</ul>
+"Total de dias afastados: "+calcularDiasAfastamento();
 
-</div>
+}
 
-</div>
+function removerAfastamento(i){
 
-</body>
-</html>
+afastamentos.splice(i,1);
+
+atualizarLista();
+
+}
+
+function calcularDiasAfastamento(){
+
+let total=0;
+
+afastamentos.forEach(a=>{
+
+let dias=(a.fim-a.inicio)/(1000*60*60*24);
+
+total+=dias;
+
+});
+
+return Math.round(total);
+
+}
+
+function consultar(){
+
+let siape=document.getElementById("siape").value.trim();
+
+let servidor=dados.find(d=>d.siape===siape);
+
+if(!servidor){
+
+document.getElementById("resultado").innerHTML="SIAPE não encontrado";
+
+return;
+
+}
+
+let nivelAtual=servidor.nivel;
+
+let indice=carreira.indexOf(nivelAtual);
+
+let ultima=criarDataLocal(servidor.ultima_progressao);
+
+let diasAfastamento=calcularDiasAfastamento();
+
+ultima.setDate(ultima.getDate()+diasAfastamento);
+
+let tabela="<h3>Progressões futuras</h3>";
+
+tabela+="<table border='1' cellpadding='6'>";
+
+tabela+="<tr><th>Nível</th><th>Data prevista</th></tr>";
+
+let data=new Date(ultima);
+
+for(let i=1;i<=5;i++){
+
+let proxNivel=carreira[indice+i];
+
+if(!proxNivel) break;
+
+let meses=24;
+
+if(nivelAtual==="A-001" && i===1){
+
+meses=36;
+
+}
+
+data=new Date(data);
+
+data.setMonth(data.getMonth()+meses);
+
+tabela+="<tr>";
+
+tabela+="<td>"+proxNivel+"</td>";
+
+tabela+="<td>"+data.toLocaleDateString()+"</td>";
+
+tabela+="</tr>";
+
+}
+
+tabela+="</table>";
+
+document.getElementById("resultado").innerHTML=
+
+"<p><b>Nome:</b> "+servidor.nome+"</p>"+
+"<p><b>Nível atual:</b> "+servidor.nivel+"</p>"+
+"<p><b>Última progressão:</b> "+ultima.toLocaleDateString()+"</p>"+
+tabela;
+
+}
+
+document.addEventListener("DOMContentLoaded", iniciar);
