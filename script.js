@@ -1,4 +1,5 @@
 let dados = [];
+let afastamentos = [];
 
 async function carregarDados(){
 
@@ -31,6 +32,58 @@ async function iniciar(){
 
     document.getElementById("btnConsultar").addEventListener("click", consultar);
 
+    document.getElementById("btnAddAfastamento").addEventListener("click", adicionarAfastamento);
+
+}
+
+function adicionarAfastamento(){
+
+    let inicio = new Date(document.getElementById("inicio").value);
+    let fim = new Date(document.getElementById("fim").value);
+
+    if(!inicio || !fim){
+        return;
+    }
+
+    afastamentos.push({inicio,fim});
+
+    atualizarLista();
+
+}
+
+function atualizarLista(){
+
+    let lista = document.getElementById("listaAfastamentos");
+
+    lista.innerHTML = "";
+
+    afastamentos.forEach(a=>{
+
+        let li = document.createElement("li");
+
+        li.innerText =
+        a.inicio.toLocaleDateString()+" até "+a.fim.toLocaleDateString();
+
+        lista.appendChild(li);
+
+    });
+
+}
+
+function calcularDiasAfastamento(){
+
+    let total = 0;
+
+    afastamentos.forEach(a=>{
+
+        let dias = (a.fim - a.inicio)/(1000*60*60*24);
+
+        total += dias;
+
+    });
+
+    return total;
+
 }
 
 function consultar(){
@@ -49,16 +102,34 @@ function consultar(){
 
     let ultima = new Date(servidor.ultima_progressao);
 
-    let proxima = new Date(ultima);
+    let diasAfastamento = calcularDiasAfastamento();
 
-    proxima.setMonth(proxima.getMonth()+24);
+    ultima.setDate(ultima.getDate() + diasAfastamento);
 
-    document.getElementById("resultado").innerHTML = `
+    let resultado = `
     <p><b>Nome:</b> ${servidor.nome}</p>
-    <p><b>Nível:</b> ${servidor.nivel}</p>
+    <p><b>Nível atual:</b> ${servidor.nivel atual}</p>
     <p><b>Última progressão:</b> ${servidor.ultima_progressao}</p>
-    <p><b>Próxima progressão:</b> ${proxima.toLocaleDateString()}</p>
+    <h3>Próximas progressões</h3>
+    <ul>
     `;
+
+    let data = new Date(ultima);
+
+    for(let i=1;i<=5;i++){
+
+        data = new Date(data);
+
+        data.setMonth(data.getMonth()+24);
+
+        resultado += `<li>${i}ª progressão: ${data.toLocaleDateString()}</li>`;
+
+    }
+
+    resultado += "</ul>";
+
+    document.getElementById("resultado").innerHTML = resultado;
+
 }
 
 document.addEventListener("DOMContentLoaded", iniciar);
