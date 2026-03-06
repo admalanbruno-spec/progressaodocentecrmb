@@ -1,12 +1,112 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta charset="UTF-8">
 <title>Consulta de Progressão Docente</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+body{
+    font-family: Arial;
+    margin:40px;
+}
+
+.container{
+    max-width:700px;
+}
+
+.resultado{
+    margin-top:20px;
+    padding:15px;
+    border:1px solid #ccc;
+}
+
+.legenda{
+    margin-top:20px;
+    font-size:14px;
+    background:#f5f5f5;
+    padding:10px;
+}
+
+button{
+    padding:8px 15px;
+    margin-top:10px;
+}
+
+input{
+    padding:5px;
+    margin-top:5px;
+}
+</style>
+
+<script>
+
+function consultar(){
+
+let dataUltima = document.getElementById("ultima").value;
+let afastInicio = document.getElementById("afastInicio").value;
+let afastFim = document.getElementById("afastFim").value;
+let nivel = document.getElementById("nivel").value;
+
+if(!dataUltima){
+alert("Informe a data da última progressão");
+return;
+}
+
+let data = new Date(dataUltima+"T00:00:00");
+
+let intervalo = 24;
+
+if(nivel === "A-001"){
+intervalo = 36;
+}
+
+let diasAfastamento = 0;
+
+if(afastInicio && afastFim){
+
+let inicio = new Date(afastInicio+"T00:00:00");
+let fim = new Date(afastFim+"T00:00:00");
+
+let diff = fim - inicio;
+
+diasAfastamento = Math.floor(diff/(1000*60*60*24));
+}
+
+let resultado = "<b>Nível atual:</b> "+nivel+"<br><br>";
+resultado += "<b>Próximas progressões:</b><br>";
+
+for(let i=1;i<=5;i++){
+
+let novaData = new Date(data);
+
+novaData.setMonth(novaData.getMonth() + intervalo*i);
+
+novaData.setDate(novaData.getDate() + diasAfastamento);
+
+let dia = novaData.getDate().toString().padStart(2,'0');
+let mes = (novaData.getMonth()+1).toString().padStart(2,'0');
+let ano = novaData.getFullYear();
+
+resultado += i+"ª Progressão: "+dia+"/"+mes+"/"+ano+"<br>";
+
+}
+
+document.getElementById("resultado").innerHTML = resultado;
+
+}
+
+function novaConsulta(){
+
+document.getElementById("ultima").value="";
+document.getElementById("afastInicio").value="";
+document.getElementById("afastFim").value="";
+document.getElementById("nivel").value="A-001";
+
+document.getElementById("resultado").innerHTML="";
+
+}
+
+</script>
 
 </head>
 
@@ -16,46 +116,65 @@
 
 <h2>Consulta de Progressão Docente</h2>
 
-<input type="text" id="siape" placeholder="Digite seu SIAPE">
+<label>Data da Última Progressão:</label><br>
+<input type="date" id="ultima"><br><br>
 
-<button id="btnConsultar">Consultar</button>
-<button id="btnNovaConsulta">Nova consulta</button>
+<label>Nível Atual:</label><br>
 
-<h3>Afastamentos que não contam para progressão</h3>
+<select id="nivel">
+<option>A-001</option>
+<option>A-002</option>
+<option>A-003</option>
+<option>A-004</option>
+<option>B-001</option>
+<option>B-002</option>
+<option>B-003</option>
+<option>B-004</option>
+<option>C-001</option>
+<option>C-002</option>
+<option>C-003</option>
+<option>C-004</option>
+<option>D-001</option>
+<option>D-002</option>
+<option>D-003</option>
+<option>D-004</option>
+<option>E-001</option>
+<option>E-002</option>
+<option>E-003</option>
+<option>E-004</option>
+</select>
 
-<label>Data início</label>
-<input type="date" id="inicio">
+<br><br>
 
-<label>Data fim</label>
-<input type="date" id="fim">
+<h4>Afastamentos (se houver)</h4>
 
-<button id="btnAddAfastamento">Adicionar afastamento</button>
+<label>Data início:</label><br>
+<input type="date" id="afastInicio"><br>
 
-<p id="totalAfastamento"></p>
+<label>Data fim:</label><br>
+<input type="date" id="afastFim"><br><br>
 
-<ul id="listaAfastamentos"></ul>
+<button onclick="consultar()">Consultar</button>
+<button onclick="novaConsulta()">Nova Consulta</button>
 
-<div id="resultado"></div>
+<div class="resultado" id="resultado"></div>
 
 <div class="legenda">
 
-<h4>Afastamentos que interrompem a contagem de tempo</h4>
+<b>Afastamentos que interrompem a contagem de tempo para progressão:</b>
 
 <ul>
-
 <li>Licença para tratar de interesses particulares</li>
-<li>Licença para acompanhar cônjuge sem remuneração</li>
+<li>Licença para atividade política</li>
+<li>Afastamento para mandato eletivo</li>
+<li>Afastamento para acompanhar cônjuge</li>
 <li>Suspensão disciplinar</li>
-<li>Afastamento sem remuneração</li>
-<li>Outros afastamentos previstos na legislação que não contam para progressão</li>
-
+<li>Outros afastamentos sem efetivo exercício</li>
 </ul>
 
 </div>
 
 </div>
-
-<script src="script.js"></script>
 
 </body>
 </html>
