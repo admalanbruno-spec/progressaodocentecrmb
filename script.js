@@ -1,30 +1,42 @@
 let dados = [];
 
-fetch("dados.csv")
-.then(res => res.text())
-.then(texto => {
+async function carregarDados(){
 
-let linhas = texto.split("\n");
+let resposta = await fetch("dados.csv");
+
+let texto = await resposta.text();
+
+let linhas = texto.trim().split("\n");
 
 for(let i=1;i<linhas.length;i++){
 
 let colunas = linhas[i].split(",");
 
 dados.push({
-
-siape:colunas[0],
-nivel:colunas[1],
-data:colunas[2]
-
+siape:colunas[0].trim(),
+nome:colunas[1].trim(),
+nivel:colunas[2].trim(),
+data:colunas[3].trim()
 });
 
 }
 
-});
+}
+
+carregarDados();
+
 
 function consultar(){
 
-let siape = document.getElementById("siape").value;
+if(dados.length === 0){
+
+alert("Os dados ainda estão carregando. Aguarde.");
+
+return;
+
+}
+
+let siape = document.getElementById("siape").value.trim();
 
 let afastInicio = document.getElementById("afastInicio").value;
 let afastFim = document.getElementById("afastFim").value;
@@ -53,14 +65,19 @@ let diasAfastamento = 0;
 
 if(afastInicio && afastFim){
 
-let inicio = new Date(afastInicio);
-let fim = new Date(afastFim);
+let inicio = new Date(afastInicio+"T00:00:00");
+
+let fim = new Date(afastFim+"T00:00:00");
 
 diasAfastamento = Math.floor((fim - inicio)/(1000*60*60*24));
 
 }
 
-let resultado = "<b>Nível atual:</b> "+servidor.nivel+"<br>";
+let resultado = "";
+
+resultado += "<b>Servidor:</b> "+servidor.nome+"<br>";
+resultado += "<b>SIAPE:</b> "+servidor.siape+"<br>";
+resultado += "<b>Nível atual:</b> "+servidor.nivel+"<br>";
 resultado += "<b>Última progressão:</b> "+servidor.data+"<br><br>";
 
 for(let i=1;i<=5;i++){
@@ -90,6 +107,7 @@ resultado += "<div class='"+classe+"'>"+i+"ª Progressão: "+dia+"/"+mes+"/"+ano
 document.getElementById("resultado").innerHTML = resultado;
 
 }
+
 
 function novaConsulta(){
 
