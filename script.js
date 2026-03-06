@@ -1,118 +1,112 @@
-let dados = [];
+async function consultar(){
 
-async function carregarDados(){
+let siape = document.getElementById("siape").value;
 
-let resposta = await fetch("dados.csv");
+let docentes = await fetch("dados_docentes.json").then(r=>r.json());
 
-let texto = await resposta.text();
-
-let linhas = texto.trim().split("\n");
-
-for(let i=1;i<linhas.length;i++){
-
-let colunas = linhas[i].split(",");
-
-dados.push({
-siape:colunas[0].trim(),
-nome:colunas[1].trim(),
-nivel:colunas[2].trim(),
-data:colunas[3].trim()
-});
-
-}
-
-}
-
-carregarDados();
-
-
-function consultar(){
-
-if(dados.length === 0){
-
-alert("Os dados ainda estão carregando. Aguarde.");
-
-return;
-
-}
-
-let siape = document.getElementById("siape").value.trim();
-
-let afastInicio = document.getElementById("afastInicio").value;
-let afastFim = document.getElementById("afastFim").value;
-
-let servidor = dados.find(d => d.siape === siape);
+let servidor = docentes.find(d => d.siape === siape);
 
 if(!servidor){
 
-alert("SIAPE não encontrado");
+document.getElementById("resultado").innerHTML =
+"<p>SIAPE não encontrado.</p>";
 
 return;
 
 }
 
-let data = new Date(servidor.data+"T00:00:00");
+const carreira = [
+"A1",
+"B1",
+"B2",
+"B3",
+"B4",
+"C1",
+"C2",
+"C3",
+"C4",
+"Titular"
+];
 
-let intervalo = 24;
+let nivelAtual = servidor.nivel;
 
-if(servidor.nivel === "A-001"){
+let indexNivel = carreira.indexOf(nivelAtual);
 
-intervalo = 36;
+let inicio = new Date(servidor.data_inicio_nivel);
 
-}
+let meses = mesesIntersticio(nivelAtual);
 
-let diasAfastamento = 0;
+let proxima = new Date(inicio);
 
-if(afastInicio && afastFim){
+proxima.setMonth(proxima.getMonth()+meses);
 
-let inicio = new Date(afastInicio+"T00:00:00");
+let hoje = new Date();
 
-let fim = new Date(afastFim+"T00:00:00");
+let diasRestantes = Math.ceil((proxima-hoje)/(1000*60*60*24));
 
-diasAfastamento = Math.floor((fim - inicio)/(1000*60*60*24));
+let proximas = gerarProximas(proxima,indexNivel,carreira);
 
-}
+document.getElementById("resultado").innerHTML = `
 
-let resultado = "";
+<h2>${servidor.nome}</h2>
 
-resultado += "<b>Servidor:</b> "+servidor.nome+"<br>";
-resultado += "<b>SIAPE:</b> "+servidor.siape+"<br>";
-resultado += "<b>Nível atual:</b> "+servidor.nivel+"<br>";
-resultado += "<b>Última progressão:</b> "+servidor.data+"<br><br>";
+<p><strong>Nível atual:</strong> ${nivelAtual}</p>
 
-for(let i=1;i<=5;i++){
+<p><strong>Próxima progressão:</strong> ${formatar(proxima)} — ${carreira[indexNivel+1] ?? "Topo da carreira"}</p>
 
-let novaData = new Date(data);
+<p><strong>Dias restantes:</strong> ${diasRestantes}</p>
 
-novaData.setMonth(novaData.getMonth() + intervalo*i);
+<h3>Próximas progressões</h3>
 
-novaData.setDate(novaData.getDate() + diasAfastamento);
+${proximas}
 
-let dia = novaData.getDate().toString().padStart(2,'0');
-let mes = (novaData.getMonth()+1).toString().padStart(2,'0');
-let ano = novaData.getFullYear();
-
-let classe = "progressao";
-
-if(i==1){
-
-classe = "progressao proxima";
-
-}
-
-resultado += "<div class='"+classe+"'>"+i+"ª Progressão: "+dia+"/"+mes+"/"+ano+"</div>";
+`;
 
 }
 
-document.getElementById("resultado").innerHTML = resultado;
+function mesesIntersticio(nivel){
+
+if(nivel === "A1"){
+return 36;
+}
+
+return 24;
 
 }
 
+function gerarProximas(data,indexNivel,carreira){
 
-function novaConsulta(){
+let lista="<ul>";
 
-document.getElementById("siape").value="";
-document.getElementById("afastInicio").value="";
+let d=new Date(data);
+
+let nivel=indexNivel;
+
+for(let i=0;i<6;i++){
+
+nivel++;
+
+if(nivel>=carreira.length) break;
+
+let meses = mesesIntersticio(carreira[nivel-1]);
+
+d.setMonth(d.getMonth()+meses);
+
+lista+=`<li>${formatar(d)} — ${carreira[nivel]}</li>`;
+
+}
+
+lista+="</ul>";
+
+return lista;
+
+}
+
+function formatar(data){
+
+return data.toLocaleDateString('pt-BR');
+
+}
 document.getElementById("afastFim").value="";
 document.getElementById("resultado").innerHTML="";
 
