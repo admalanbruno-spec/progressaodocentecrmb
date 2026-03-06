@@ -8,6 +8,14 @@ const carreira = [
 "D-001","D-002","D-003","D-004"
 ];
 
+function criarDataLocal(dataString){
+
+const partes = dataString.split("-");
+
+return new Date(partes[0], partes[1]-1, partes[2]);
+
+}
+
 async function carregarDados(){
 
 const resposta = await fetch("dados.csv");
@@ -44,6 +52,20 @@ document.getElementById("btnConsultar").addEventListener("click", consultar);
 
 document.getElementById("btnAddAfastamento").addEventListener("click", adicionarAfastamento);
 
+document.getElementById("btnNovaConsulta").addEventListener("click", novaConsulta);
+
+}
+
+function novaConsulta(){
+
+document.getElementById("resultado").innerHTML="";
+
+document.getElementById("siape").value="";
+
+afastamentos=[];
+
+atualizarLista();
+
 }
 
 function adicionarAfastamento(){
@@ -63,13 +85,14 @@ function atualizarLista(){
 
 let lista = document.getElementById("listaAfastamentos");
 
-lista.innerHTML = "";
+lista.innerHTML="";
 
 afastamentos.forEach((a,index)=>{
 
-let li = document.createElement("li");
+let li=document.createElement("li");
 
-li.innerHTML =
+li.innerHTML=
+
 a.inicio.toLocaleDateString()+" até "+a.fim.toLocaleDateString()+
 " <button onclick='removerAfastamento("+index+")'>remover</button>";
 
@@ -77,7 +100,8 @@ lista.appendChild(li);
 
 });
 
-document.getElementById("totalAfastamento").innerText =
+document.getElementById("totalAfastamento").innerText=
+
 "Total de dias afastados: "+calcularDiasAfastamento();
 
 }
@@ -92,13 +116,13 @@ atualizarLista();
 
 function calcularDiasAfastamento(){
 
-let total = 0;
+let total=0;
 
 afastamentos.forEach(a=>{
 
-let dias = (a.fim - a.inicio)/(1000*60*60*24);
+let dias=(a.fim-a.inicio)/(1000*60*60*24);
 
-total += dias;
+total+=dias;
 
 });
 
@@ -108,75 +132,72 @@ return Math.round(total);
 
 function consultar(){
 
-let siape = document.getElementById("siape").value.trim();
+let siape=document.getElementById("siape").value.trim();
 
-let servidor = dados.find(d => d.siape === siape);
+let servidor=dados.find(d=>d.siape===siape);
 
 if(!servidor){
 
-document.getElementById("resultado").innerHTML = "SIAPE não encontrado";
+document.getElementById("resultado").innerHTML="SIAPE não encontrado";
 
 return;
 
 }
 
-let nivelAtual = servidor.nivel;
+let nivelAtual=servidor.nivel;
 
-let indice = carreira.indexOf(nivelAtual);
+let indice=carreira.indexOf(nivelAtual);
 
-let ultima = new Date(servidor.ultima_progressao);
+let ultima=criarDataLocal(servidor.ultima_progressao);
 
-let diasAfastamento = calcularDiasAfastamento();
+let diasAfastamento=calcularDiasAfastamento();
 
 ultima.setDate(ultima.getDate()+diasAfastamento);
 
-let tabela = "<h3>Progressões futuras</h3>";
+let tabela="<h3>Progressões futuras</h3>";
 
-tabela += "<table border='1' cellpadding='6'>";
+tabela+="<table border='1' cellpadding='6'>";
 
-tabela += "<tr><th>Nível</th><th>Data prevista</th></tr>";
+tabela+="<tr><th>Nível</th><th>Data prevista</th></tr>";
 
-let data = new Date(ultima);
+let data=new Date(ultima);
 
 for(let i=1;i<=5;i++){
 
-let proxNivel = carreira[indice+i];
+let proxNivel=carreira[indice+i];
 
 if(!proxNivel) break;
 
-let meses = 24;
+let meses=24;
 
-if(nivelAtual === "A-001" && i===1){
+if(nivelAtual==="A-001" && i===1){
 
-meses = 36;
+meses=36;
 
 }
 
-data = new Date(data);
+data=new Date(data);
 
 data.setMonth(data.getMonth()+meses);
 
-tabela += "<tr>";
+tabela+="<tr>";
 
-tabela += "<td>"+proxNivel+"</td>";
+tabela+="<td>"+proxNivel+"</td>";
 
-tabela += "<td>"+data.toLocaleDateString()+"</td>";
+tabela+="<td>"+data.toLocaleDateString()+"</td>";
 
-tabela += "</tr>";
+tabela+="</tr>";
 
 }
 
-tabela += "</table>";
+tabela+="</table>";
 
-document.getElementById("resultado").innerHTML =
+document.getElementById("resultado").innerHTML=
+
 "<p><b>Nome:</b> "+servidor.nome+"</p>"+
 "<p><b>Nível atual:</b> "+servidor.nivel+"</p>"+
-"<p><b>Última progressão:</b> "+servidor.ultima_progressao+"</p>"+
+"<p><b>Última progressão:</b> "+ultima.toLocaleDateString()+"</p>"+
 tabela;
-
-}
-
-document.addEventListener("DOMContentLoaded", iniciar);
 
 }
 
