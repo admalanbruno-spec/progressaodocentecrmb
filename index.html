@@ -1,12 +1,168 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta charset="UTF-8">
 <title>Consulta de Progressão Docente</title>
 
-<link rel="stylesheet" href="style.css">
+<style>
+
+body{
+    background:#0b1f3a;
+    font-family:Arial;
+    color:white;
+    margin:0;
+}
+
+.container{
+    max-width:800px;
+    margin:auto;
+    padding:40px;
+}
+
+h1{
+    text-align:center;
+    font-size:42px;
+    margin-bottom:40px;
+}
+
+label{
+    font-size:16px;
+}
+
+input, select{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:15px;
+    background:black;
+    color:white;
+    border:1px solid #555;
+    border-radius:5px;
+}
+
+button{
+    padding:12px 20px;
+    margin-top:10px;
+    margin-right:10px;
+    border:none;
+    border-radius:5px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.consultar{
+    background:#1e88e5;
+    color:white;
+}
+
+.nova{
+    background:#555;
+    color:white;
+}
+
+.resultado{
+    margin-top:30px;
+    padding:20px;
+    background:#091427;
+    border-radius:8px;
+}
+
+.progressao{
+    padding:10px;
+    border-bottom:1px solid #2f4c7a;
+}
+
+.proxima{
+    background:#0f3d1f;
+    color:#00ff7f;
+    font-weight:bold;
+    font-size:18px;
+}
+
+.legenda{
+    margin-top:30px;
+    background:#091427;
+    padding:15px;
+    border-radius:8px;
+}
+
+</style>
+
+<script>
+
+function consultar(){
+
+let dataUltima = document.getElementById("ultima").value;
+let afastInicio = document.getElementById("afastInicio").value;
+let afastFim = document.getElementById("afastFim").value;
+let nivel = document.getElementById("nivel").value;
+
+if(!dataUltima){
+alert("Informe a data da última progressão");
+return;
+}
+
+let data = new Date(dataUltima+"T00:00:00");
+
+let intervalo = 24;
+
+if(nivel === "A-001"){
+intervalo = 36;
+}
+
+let diasAfastamento = 0;
+
+if(afastInicio && afastFim){
+
+let inicio = new Date(afastInicio+"T00:00:00");
+let fim = new Date(afastFim+"T00:00:00");
+
+let diff = fim - inicio;
+
+diasAfastamento = Math.floor(diff/(1000*60*60*24));
+
+}
+
+let resultado = "<div><b>Nível atual:</b> "+nivel+"</div><br>";
+
+for(let i=1;i<=5;i++){
+
+let novaData = new Date(data);
+
+novaData.setMonth(novaData.getMonth() + intervalo*i);
+
+novaData.setDate(novaData.getDate() + diasAfastamento);
+
+let dia = novaData.getDate().toString().padStart(2,'0');
+let mes = (novaData.getMonth()+1).toString().padStart(2,'0');
+let ano = novaData.getFullYear();
+
+let classe = "progressao";
+
+if(i==1){
+classe = "progressao proxima";
+}
+
+resultado += "<div class='"+classe+"'>"+i+"ª Progressão: "+dia+"/"+mes+"/"+ano+"</div>";
+
+}
+
+document.getElementById("resultado").innerHTML = resultado;
+
+}
+
+function novaConsulta(){
+
+document.getElementById("ultima").value="";
+document.getElementById("afastInicio").value="";
+document.getElementById("afastFim").value="";
+document.getElementById("nivel").value="A-001";
+
+document.getElementById("resultado").innerHTML="";
+
+}
+
+</script>
 
 </head>
 
@@ -14,52 +170,65 @@
 
 <div class="container">
 
-<h2>Consulta de Progressão Docente</h2>
+<h1>CONSULTA DE PROGRESSÃO DOCENTE</h1>
 
-<input type="text" id="siape" placeholder="Digite seu SIAPE">
+<label>Data da Última Progressão</label>
+<input type="date" id="ultima">
 
-<button id="btnConsultar">Consultar</button>
-<button id="btnNovaConsulta">Nova consulta</button>
+<label>Nível Atual</label>
 
-<h3>Afastamentos que não contam para progressão</h3>
+<select id="nivel">
+<option>A-001</option>
+<option>A-002</option>
+<option>A-003</option>
+<option>A-004</option>
+<option>B-001</option>
+<option>B-002</option>
+<option>B-003</option>
+<option>B-004</option>
+<option>C-001</option>
+<option>C-002</option>
+<option>C-003</option>
+<option>C-004</option>
+<option>D-001</option>
+<option>D-002</option>
+<option>D-003</option>
+<option>D-004</option>
+<option>E-001</option>
+<option>E-002</option>
+<option>E-003</option>
+<option>E-004</option>
+</select>
+
+<h3>Afastamentos (se houver)</h3>
 
 <label>Data início</label>
-<input type="date" id="inicio">
+<input type="date" id="afastInicio">
 
 <label>Data fim</label>
-<input type="date" id="fim">
+<input type="date" id="afastFim">
 
-<button id="btnAddAfastamento">Adicionar afastamento</button>
+<button class="consultar" onclick="consultar()">Consultar</button>
+<button class="nova" onclick="novaConsulta()">Nova Consulta</button>
 
-<p id="totalAfastamento"></p>
-
-<ul id="listaAfastamentos"></ul>
-
-<div id="resultado"></div>
+<div class="resultado" id="resultado"></div>
 
 <div class="legenda">
 
-<h4>Afastamentos que interrompem a contagem de tempo</h4>
+<b>Afastamentos que interrompem a contagem de tempo para progressão</b>
 
 <ul>
-
 <li>Licença para tratar de interesses particulares</li>
-<li>Licença para acompanhar cônjuge sem remuneração</li>
+<li>Licença para atividade política</li>
+<li>Afastamento para mandato eletivo</li>
+<li>Afastamento para acompanhar cônjuge</li>
 <li>Suspensão disciplinar</li>
-<li>Afastamento sem remuneração</li>
-<li>Outros afastamentos previstos na legislação que não contam para progressão</li>
-
+<li>Outros afastamentos sem efetivo exercício</li>
 </ul>
 
 </div>
 
 </div>
 
-<script src="script.js"></script>
-
 </body>
 </html>
-
-}
-
-document.addEventListener("DOMContentLoaded", iniciar);
