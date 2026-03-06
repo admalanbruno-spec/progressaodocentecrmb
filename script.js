@@ -1,54 +1,68 @@
 async function consultar(){
 
-let siape = document.getElementById("siape").value;
+try{
 
-let docentes = await fetch("dados_docentes.json").then(r=>r.json());
+let siape = document.getElementById("siape").value.trim();
 
-let servidor = docentes.find(d => d.siape === siape);
+if(!siape){
 
-if(!servidor){
-
-document.getElementById("resultado").innerHTML="SIAPE não encontrado.";
+alert("Digite sua matrícula SIAPE.");
 
 return;
 
 }
 
-const carreira=[
-"A1","B1","B2","B3","B4","C1","C2","C3","C4","Titular"
+let resposta = await fetch("dados_docentes.json");
+
+let docentes = await resposta.json();
+
+let servidor = docentes.find(d => d.siape === siape);
+
+if(!servidor){
+
+document.getElementById("resultado").innerHTML =
+"<p>SIAPE não encontrado.</p>";
+
+return;
+
+}
+
+const carreira = [
+"A1","B1","B2","B3","B4",
+"C1","C2","C3","C4","Titular"
 ];
 
-let nivelAtual=servidor.nivel;
+let nivelAtual = servidor.nivel;
 
-let indexNivel=carreira.indexOf(nivelAtual);
+let indexNivel = carreira.indexOf(nivelAtual);
 
-let inicio=new Date(servidor.data_inicio_nivel);
+let inicio = new Date(servidor.data_inicio_nivel);
 
-let meses=mesesIntersticio(nivelAtual);
+let meses = mesesIntersticio(nivelAtual);
 
-let proxima=new Date(inicio);
+let proxima = new Date(inicio);
 
 proxima.setMonth(proxima.getMonth()+meses);
 
-let diasAfastamento=calcularAfastamento();
+let diasAfastamento = calcularAfastamento();
 
 proxima.setDate(proxima.getDate()+diasAfastamento);
 
-let hoje=new Date();
+let hoje = new Date();
 
-let diasRestantes=Math.ceil((proxima-hoje)/(1000*60*60*24));
+let diasRestantes = Math.ceil((proxima-hoje)/(1000*60*60*24));
 
-let proximas=gerarProximas(proxima,indexNivel,carreira);
+let proximas = gerarProximas(proxima,indexNivel,carreira);
 
-document.getElementById("resultado").innerHTML=`
+document.getElementById("resultado").innerHTML = `
 
 <h2>${servidor.nome}</h2>
 
-<p><b>Nível atual:</b> ${nivelAtual}</p>
+<p><strong>Nível atual:</strong> ${nivelAtual}</p>
 
-<p><b>Próxima progressão:</b> ${formatar(proxima)} — ${carreira[indexNivel+1] ?? "Topo da carreira"}</p>
+<p><strong>Próxima progressão:</strong> ${formatar(proxima)} — ${carreira[indexNivel+1] ?? "Topo da carreira"}</p>
 
-<p><b>Dias restantes:</b> ${diasRestantes}</p>
+<p><strong>Dias restantes:</strong> ${diasRestantes}</p>
 
 <h3>Próximas progressões</h3>
 
@@ -56,33 +70,43 @@ ${proximas}
 
 `;
 
+}catch(erro){
+
+console.error(erro);
+
+document.getElementById("resultado").innerHTML =
+"<p>Erro ao calcular progressão.</p>";
+
+}
+
 }
 
 function toggleAfastamento(){
 
-let check=document.getElementById("temAfastamento").checked;
+let check = document.getElementById("temAfastamento").checked;
 
-document.getElementById("areaAfastamento").style.display=check?"block":"none";
+document.getElementById("areaAfastamento").style.display =
+check ? "block" : "none";
 
 }
 
 function calcularAfastamento(){
 
-let check=document.getElementById("temAfastamento").checked;
+let check = document.getElementById("temAfastamento").checked;
 
 if(!check) return 0;
 
-let inicio=document.getElementById("dataInicioAfastamento").value;
+let inicio = document.getElementById("dataInicioAfastamento").value;
 
-let fim=document.getElementById("dataFimAfastamento").value;
+let fim = document.getElementById("dataFimAfastamento").value;
 
 if(!inicio || !fim) return 0;
 
-let d1=new Date(inicio);
+let d1 = new Date(inicio);
 
-let d2=new Date(fim);
+let d2 = new Date(fim);
 
-let dias=Math.ceil((d2-d1)/(1000*60*60*24));
+let dias = Math.ceil((d2 - d1) / (1000*60*60*24));
 
 return dias;
 
@@ -90,7 +114,11 @@ return dias;
 
 function mesesIntersticio(nivel){
 
-if(nivel==="A1") return 36;
+if(nivel === "A1"){
+
+return 36;
+
+}
 
 return 24;
 
@@ -98,27 +126,27 @@ return 24;
 
 function gerarProximas(data,indexNivel,carreira){
 
-let lista="<ul>";
+let lista = "<ul>";
 
-let d=new Date(data);
+let d = new Date(data);
 
-let nivel=indexNivel;
+let nivel = indexNivel;
 
 for(let i=0;i<6;i++){
 
 nivel++;
 
-if(nivel>=carreira.length) break;
+if(nivel >= carreira.length) break;
 
-let meses=mesesIntersticio(carreira[nivel-1]);
+let meses = mesesIntersticio(carreira[nivel-1]);
 
 d.setMonth(d.getMonth()+meses);
 
-lista+=`<li>${formatar(d)} — ${carreira[nivel]}</li>`;
+lista += `<li>${formatar(d)} — ${carreira[nivel]}</li>`;
 
 }
 
-lista+="</ul>";
+lista += "</ul>";
 
 return lista;
 
