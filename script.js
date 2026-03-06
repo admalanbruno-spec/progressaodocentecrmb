@@ -1,204 +1,71 @@
-let dados = [];
-let afastamentos = [];
+function consultar(){
 
-const carreira = [
-"A-001","A-002",
-"B-001","B-002",
-"C-001","C-002","C-003","C-004",
-"D-001","D-002","D-003","D-004"
-];
+let dataUltima = document.getElementById("ultima").value;
+let afastInicio = document.getElementById("afastInicio").value;
+let afastFim = document.getElementById("afastFim").value;
+let nivel = document.getElementById("nivel").value;
 
-function criarDataLocal(dataString){
+if(!dataUltima){
+alert("Informe a data da última progressão");
+return;
+}
 
-const partes = dataString.split("-");
+let data = new Date(dataUltima+"T00:00:00");
 
-return new Date(partes[0], partes[1]-1, partes[2]);
+let intervalo = 24;
+
+if(nivel === "A-001"){
+intervalo = 36;
+}
+
+let diasAfastamento = 0;
+
+if(afastInicio && afastFim){
+
+let inicio = new Date(afastInicio+"T00:00:00");
+let fim = new Date(afastFim+"T00:00:00");
+
+let diff = fim - inicio;
+
+diasAfastamento = Math.floor(diff/(1000*60*60*24));
 
 }
 
-async function carregarDados(){
+let resultado = "<div><b>Nível atual:</b> "+nivel+"</div><br>";
 
-const resposta = await fetch("dados.csv");
+for(let i=1;i<=5;i++){
 
-const texto = await resposta.text();
+let novaData = new Date(data);
 
-const linhas = texto.trim().split("\n");
+novaData.setMonth(novaData.getMonth() + intervalo*i);
 
-const cabecalho = linhas[0].split(",");
+novaData.setDate(novaData.getDate() + diasAfastamento);
 
-for(let i=1;i<linhas.length;i++){
+let dia = novaData.getDate().toString().padStart(2,'0');
+let mes = (novaData.getMonth()+1).toString().padStart(2,'0');
+let ano = novaData.getFullYear();
 
-const valores = linhas[i].split(",");
+let classe = "progressao";
 
-let registro = {};
+if(i==1){
+classe = "progressao proxima";
+}
 
-cabecalho.forEach((campo,index)=>{
-
-registro[campo.trim()] = valores[index].trim();
-
-});
-
-dados.push(registro);
+resultado += "<div class='"+classe+"'>"+i+"ª Progressão: "+dia+"/"+mes+"/"+ano+"</div>";
 
 }
 
-}
-
-async function iniciar(){
-
-await carregarDados();
-
-document.getElementById("btnConsultar").addEventListener("click", consultar);
-
-document.getElementById("btnAddAfastamento").addEventListener("click", adicionarAfastamento);
-
-document.getElementById("btnNovaConsulta").addEventListener("click", novaConsulta);
+document.getElementById("resultado").innerHTML = resultado;
 
 }
 
 function novaConsulta(){
 
+document.getElementById("ultima").value="";
+document.getElementById("afastInicio").value="";
+document.getElementById("afastFim").value="";
+document.getElementById("nivel").value="A-001";
+
 document.getElementById("resultado").innerHTML="";
 
-document.getElementById("siape").value="";
-
-afastamentos=[];
-
-atualizarLista();
-
 }
-
-function adicionarAfastamento(){
-
-let inicio = new Date(document.getElementById("inicio").value);
-let fim = new Date(document.getElementById("fim").value);
-
-if(!inicio || !fim) return;
-
-afastamentos.push({inicio,fim});
-
-atualizarLista();
-
-}
-
-function atualizarLista(){
-
-let lista = document.getElementById("listaAfastamentos");
-
-lista.innerHTML="";
-
-afastamentos.forEach((a,index)=>{
-
-let li=document.createElement("li");
-
-li.innerHTML=
-
-a.inicio.toLocaleDateString()+" até "+a.fim.toLocaleDateString()+
-" <button onclick='removerAfastamento("+index+")'>remover</button>";
-
-lista.appendChild(li);
-
-});
-
-document.getElementById("totalAfastamento").innerText=
-
-"Total de dias afastados: "+calcularDiasAfastamento();
-
-}
-
-function removerAfastamento(i){
-
-afastamentos.splice(i,1);
-
-atualizarLista();
-
-}
-
-function calcularDiasAfastamento(){
-
-let total=0;
-
-afastamentos.forEach(a=>{
-
-let dias=(a.fim-a.inicio)/(1000*60*60*24);
-
-total+=dias;
-
-});
-
-return Math.round(total);
-
-}
-
-function consultar(){
-
-let siape=document.getElementById("siape").value.trim();
-
-let servidor=dados.find(d=>d.siape===siape);
-
-if(!servidor){
-
-document.getElementById("resultado").innerHTML="SIAPE não encontrado";
-
-return;
-
-}
-
-let nivelAtual=servidor.nivel;
-
-let indice=carreira.indexOf(nivelAtual);
-
-let ultima=criarDataLocal(servidor.ultima_progressao);
-
-let diasAfastamento=calcularDiasAfastamento();
-
-ultima.setDate(ultima.getDate()+diasAfastamento);
-
-let tabela="<h3>Progressões futuras</h3>";
-
-tabela+="<table border='1' cellpadding='6'>";
-
-tabela+="<tr><th>Nível</th><th>Data prevista</th></tr>";
-
-let data=new Date(ultima);
-
-for(let i=1;i<=5;i++){
-
-let proxNivel=carreira[indice+i];
-
-if(!proxNivel) break;
-
-let meses=24;
-
-if(nivelAtual==="A-001" && i===1){
-
-meses=36;
-
-}
-
-data=new Date(data);
-
-data.setMonth(data.getMonth()+meses);
-
-tabela+="<tr>";
-
-tabela+="<td>"+proxNivel+"</td>";
-
-tabela+="<td>"+data.toLocaleDateString()+"</td>";
-
-tabela+="</tr>";
-
-}
-
-tabela+="</table>";
-
-document.getElementById("resultado").innerHTML=
-
-"<p><b>Nome:</b> "+servidor.nome+"</p>"+
-"<p><b>Nível atual:</b> "+servidor.nivel+"</p>"+
-"<p><b>Última progressão:</b> "+ultima.toLocaleDateString()+"</p>"+
-tabela;
-
-}
-
-document.addEventListener("DOMContentLoaded", iniciar);
