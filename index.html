@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 
 <head>
 
@@ -12,48 +12,31 @@
 
 <body>
 
+<h1>Consulta de Progressão Docente</h1>
+
 <div class="container">
 
-<h1>CONSULTA DE PROGRESSÃO DOCENTE</h1>
+<label>Digite sua matrícula SIAPE</label>
 
-<label>siape</label>
-<input type="text" id="siape" placeholder="Digite sua matrícula">
+<input id="siape" type="text" placeholder="Ex: 1234567">
 
-<h3>Afastamentos (se houver)</h3>
+<button onclick="consultar()">Consultar</button>
 
-<label>Data início</label>
-<input type="date" id="afastInicio">
+</div>
 
-<label>Data fim</label>
-<input type="date" id="afastFim">
+<div id="resultado"></div>
 
-<button class="consultar" onclick="consultar()">Consultar</button>
+<div class="info">
 
-<button class="nova" onclick="novaConsulta()">Nova Consulta</button>
-
-<div class="resultado" id="resultado"></div>
-
-<div class="legenda">
-
-<b>Afastamentos que interrompem a contagem:</b>
+<h3>Regras de progressão</h3>
 
 <ul>
 
-<li>Licença para tratar de interesses particulares</li>
+<li>A1 → B1: interstício de 36 meses (estágio probatório)</li>
 
-<li>Licença para atividade política</li>
-
-<li>Afastamento para mandato eletivo</li>
-
-<li>Afastamento para acompanhar cônjuge</li>
-
-<li>Suspensão disciplinar</li>
-
-<li>Outros afastamentos sem efetivo exercício</li>
+<li>Demais progressões: interstício de 24 meses</li>
 
 </ul>
-
-</div>
 
 </div>
 
