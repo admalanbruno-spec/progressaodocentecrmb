@@ -108,7 +108,7 @@ function consultar(){
 
     let resultado = `
     <p><b>Nome:</b> ${servidor.nome}</p>
-    <p><b>Nível atual:</b> ${servidor.nivel atual}</p>
+    <p><b>Nível atual:</b> ${servidor.nivel_atual}</p>
     <p><b>Última progressão:</b> ${servidor.ultima_progressao}</p>
     <h3>Próximas progressões</h3>
     <ul>
