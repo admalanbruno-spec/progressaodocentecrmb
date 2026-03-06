@@ -1,75 +1,83 @@
 body{
-background:#0b1f3a;
-font-family:Arial;
-color:white;
-margin:0;
-}
 
-.container{
-max-width:800px;
-margin:auto;
-padding:40px;
+font-family: "Segoe UI", Arial, sans-serif;
+background:#f2f4f7;
+margin:40px;
+color:#2c3e50;
+
 }
 
 h1{
-text-align:center;
-font-size:42px;
-margin-bottom:40px;
+
+font-size:28px;
+margin-bottom:20px;
+
+}
+
+.container{
+
+background:white;
+padding:25px;
+border-radius:10px;
+max-width:400px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
+
+}
+
+label{
+
+font-weight:600;
+
 }
 
 input{
+
 width:100%;
 padding:10px;
-margin-top:5px;
+margin-top:6px;
 margin-bottom:15px;
-background:black;
-color:white;
-border:1px solid #555;
-border-radius:5px;
+border-radius:6px;
+border:1px solid #ccc;
+
 }
 
 button{
-padding:12px 20px;
-margin-top:10px;
-margin-right:10px;
+
+background:#0057b8;
+color:white;
+padding:10px 15px;
 border:none;
-border-radius:5px;
-font-size:15px;
+border-radius:6px;
 cursor:pointer;
+font-weight:600;
+
 }
 
-.consultar{
-background:#1e88e5;
-color:white;
+button:hover{
+
+background:#003f87;
+
 }
 
-.nova{
-background:#555;
-color:white;
-}
+#resultado{
 
-.resultado{
 margin-top:30px;
 padding:20px;
-background:#091427;
-border-radius:8px;
+background:white;
+border-radius:10px;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
+
 }
 
-.progressao{
-padding:10px;
-border-bottom:1px solid #2f4c7a;
+ul{
+
+padding-left:20px;
+
 }
 
-.proxima{
-background:#0f3d1f;
-color:#00ff7f;
-font-weight:bold;
-font-size:18px;
-}
+.info{
 
-.legenda{
-margin-top:30px;
-background:#091427;
-padding:15px;
-border-radius:8px;
+margin-top:40px;
+max-width:500px;
+
 }
