@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Consulta de Progressão Docente</title>
+</head>
+
+<body>
+
+<h2>Consulta de Progressão Docente</h2>
+
+<input type="text" id="siape" placeholder="Digite seu SIAPE">
+
+<button onclick="consultar()">Consultar</button>
+
+<div id="resultado"></div>
+
+<h3>Afastamentos</h3>
+
+<label>Data início:</label>
+<input type="date" id="inicio">
+
+<label>Data fim:</label>
+<input type="date" id="fim">
+
+<button onclick="adicionarAfastamento()">Adicionar afastamento</button>
+
+<ul id="listaAfastamentos"></ul>
+
+<script src="script.js"></script>
+
+</body>
+</html>
