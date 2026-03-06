@@ -1,23 +1,49 @@
+let dados = [];
+
+fetch("dados.csv")
+.then(res => res.text())
+.then(texto => {
+
+let linhas = texto.split("\n");
+
+for(let i=1;i<linhas.length;i++){
+
+let colunas = linhas[i].split(",");
+
+dados.push({
+
+siape:colunas[0],
+nivel:colunas[1],
+data:colunas[2]
+
+});
+
+}
+
+});
+
 function consultar(){
 
-let dataUltima = document.getElementById("ultima").value;
+let siape = document.getElementById("siape").value;
+
 let afastInicio = document.getElementById("afastInicio").value;
 let afastFim = document.getElementById("afastFim").value;
-let nivel = document.getElementById("nivel").value;
 
-if(!dataUltima){
+let servidor = dados.find(d => d.siape === siape);
 
-alert("Informe a data da última progressão");
+if(!servidor){
+
+alert("SIAPE não encontrado");
 
 return;
 
 }
 
-let data = new Date(dataUltima+"T00:00:00");
+let data = new Date(servidor.data+"T00:00:00");
 
 let intervalo = 24;
 
-if(nivel === "A-001"){
+if(servidor.nivel === "A-001"){
 
 intervalo = 36;
 
@@ -27,17 +53,15 @@ let diasAfastamento = 0;
 
 if(afastInicio && afastFim){
 
-let inicio = new Date(afastInicio+"T00:00:00");
+let inicio = new Date(afastInicio);
+let fim = new Date(afastFim);
 
-let fim = new Date(afastFim+"T00:00:00");
-
-let diff = fim - inicio;
-
-diasAfastamento = Math.floor(diff/(1000*60*60*24));
+diasAfastamento = Math.floor((fim - inicio)/(1000*60*60*24));
 
 }
 
-let resultado = "<div><b>Nível atual:</b> "+nivel+"</div><br>";
+let resultado = "<b>Nível atual:</b> "+servidor.nivel+"<br>";
+resultado += "<b>Última progressão:</b> "+servidor.data+"<br><br>";
 
 for(let i=1;i<=5;i++){
 
@@ -69,11 +93,9 @@ document.getElementById("resultado").innerHTML = resultado;
 
 function novaConsulta(){
 
-document.getElementById("ultima").value="";
+document.getElementById("siape").value="";
 document.getElementById("afastInicio").value="";
 document.getElementById("afastFim").value="";
-document.getElementById("nivel").value="A-001";
-
 document.getElementById("resultado").innerHTML="";
 
 }
