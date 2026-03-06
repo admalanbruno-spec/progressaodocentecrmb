@@ -1,87 +1,90 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <meta charset="UTF-8">
+
 <title>Consulta de Progressão Docente</title>
 
-<style>
+<link rel="stylesheet" href="style.css">
 
-body{
-    background:#0b1f3a;
-    font-family:Arial;
-    color:white;
-    margin:0;
-}
+</head>
 
-.container{
-    max-width:800px;
-    margin:auto;
-    padding:40px;
-}
+<body>
 
-h1{
-    text-align:center;
-    font-size:42px;
-    margin-bottom:40px;
-}
+<div class="container">
 
-label{
-    font-size:16px;
-}
+<h1>CONSULTA DE PROGRESSÃO DOCENTE</h1>
 
-input, select{
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:15px;
-    background:black;
-    color:white;
-    border:1px solid #555;
-    border-radius:5px;
-}
+<label>Data da Última Progressão</label>
+<input type="date" id="ultima">
 
-button{
-    padding:12px 20px;
-    margin-top:10px;
-    margin-right:10px;
-    border:none;
-    border-radius:5px;
-    font-size:15px;
-    cursor:pointer;
-}
+<label>Nível Atual</label>
 
-.consultar{
-    background:#1e88e5;
-    color:white;
-}
+<select id="nivel">
+<option>A-001</option>
+<option>A-002</option>
+<option>A-003</option>
+<option>A-004</option>
+<option>B-001</option>
+<option>B-002</option>
+<option>B-003</option>
+<option>B-004</option>
+<option>C-001</option>
+<option>C-002</option>
+<option>C-003</option>
+<option>C-004</option>
+<option>D-001</option>
+<option>D-002</option>
+<option>D-003</option>
+<option>D-004</option>
+<option>E-001</option>
+<option>E-002</option>
+<option>E-003</option>
+<option>E-004</option>
+</select>
 
-.nova{
-    background:#555;
-    color:white;
-}
+<h3>Afastamentos (se houver)</h3>
 
-.resultado{
-    margin-top:30px;
-    padding:20px;
-    background:#091427;
-    border-radius:8px;
-}
+<label>Data início</label>
+<input type="date" id="afastInicio">
 
-.progressao{
-    padding:10px;
-    border-bottom:1px solid #2f4c7a;
-}
+<label>Data fim</label>
+<input type="date" id="afastFim">
 
-.proxima{
-    background:#0f3d1f;
-    color:#00ff7f;
-    font-weight:bold;
-    font-size:18px;
-}
+<button class="consultar" onclick="consultar()">Consultar</button>
 
-.legenda{
-    margin-top:30px;
-    background:#091427;
-    padding:15px;
-    border-radius:8px;
-}
+<button class="nova" onclick="novaConsulta()">Nova Consulta</button>
+
+<div class="resultado" id="resultado"></div>
+
+<div class="legenda">
+
+<b>Afastamentos que interrompem a contagem de tempo:</b>
+
+<ul>
+
+<li>Licença para tratar de interesses particulares</li>
+
+<li>Licença para atividade política</li>
+
+<li>Afastamento para mandato eletivo</li>
+
+<li>Afastamento para acompanhar cônjuge</li>
+
+<li>Suspensão disciplinar</li>
+
+<li>Outros afastamentos sem efetivo exercício</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
