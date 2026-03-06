@@ -8,53 +8,47 @@ let servidor = docentes.find(d => d.siape === siape);
 
 if(!servidor){
 
-document.getElementById("resultado").innerHTML =
-"<p>SIAPE não encontrado.</p>";
+document.getElementById("resultado").innerHTML="SIAPE não encontrado.";
 
 return;
 
 }
 
-const carreira = [
-"A1",
-"B1",
-"B2",
-"B3",
-"B4",
-"C1",
-"C2",
-"C3",
-"C4",
-"Titular"
+const carreira=[
+"A1","B1","B2","B3","B4","C1","C2","C3","C4","Titular"
 ];
 
-let nivelAtual = servidor.nivel;
+let nivelAtual=servidor.nivel;
 
-let indexNivel = carreira.indexOf(nivelAtual);
+let indexNivel=carreira.indexOf(nivelAtual);
 
-let inicio = new Date(servidor.data_inicio_nivel);
+let inicio=new Date(servidor.data_inicio_nivel);
 
-let meses = mesesIntersticio(nivelAtual);
+let meses=mesesIntersticio(nivelAtual);
 
-let proxima = new Date(inicio);
+let proxima=new Date(inicio);
 
 proxima.setMonth(proxima.getMonth()+meses);
 
-let hoje = new Date();
+let diasAfastamento=calcularAfastamento();
 
-let diasRestantes = Math.ceil((proxima-hoje)/(1000*60*60*24));
+proxima.setDate(proxima.getDate()+diasAfastamento);
 
-let proximas = gerarProximas(proxima,indexNivel,carreira);
+let hoje=new Date();
 
-document.getElementById("resultado").innerHTML = `
+let diasRestantes=Math.ceil((proxima-hoje)/(1000*60*60*24));
+
+let proximas=gerarProximas(proxima,indexNivel,carreira);
+
+document.getElementById("resultado").innerHTML=`
 
 <h2>${servidor.nome}</h2>
 
-<p><strong>Nível atual:</strong> ${nivelAtual}</p>
+<p><b>Nível atual:</b> ${nivelAtual}</p>
 
-<p><strong>Próxima progressão:</strong> ${formatar(proxima)} — ${carreira[indexNivel+1] ?? "Topo da carreira"}</p>
+<p><b>Próxima progressão:</b> ${formatar(proxima)} — ${carreira[indexNivel+1] ?? "Topo da carreira"}</p>
 
-<p><strong>Dias restantes:</strong> ${diasRestantes}</p>
+<p><b>Dias restantes:</b> ${diasRestantes}</p>
 
 <h3>Próximas progressões</h3>
 
@@ -64,11 +58,39 @@ ${proximas}
 
 }
 
+function toggleAfastamento(){
+
+let check=document.getElementById("temAfastamento").checked;
+
+document.getElementById("areaAfastamento").style.display=check?"block":"none";
+
+}
+
+function calcularAfastamento(){
+
+let check=document.getElementById("temAfastamento").checked;
+
+if(!check) return 0;
+
+let inicio=document.getElementById("dataInicioAfastamento").value;
+
+let fim=document.getElementById("dataFimAfastamento").value;
+
+if(!inicio || !fim) return 0;
+
+let d1=new Date(inicio);
+
+let d2=new Date(fim);
+
+let dias=Math.ceil((d2-d1)/(1000*60*60*24));
+
+return dias;
+
+}
+
 function mesesIntersticio(nivel){
 
-if(nivel === "A1"){
-return 36;
-}
+if(nivel==="A1") return 36;
 
 return 24;
 
@@ -88,7 +110,7 @@ nivel++;
 
 if(nivel>=carreira.length) break;
 
-let meses = mesesIntersticio(carreira[nivel-1]);
+let meses=mesesIntersticio(carreira[nivel-1]);
 
 d.setMonth(d.getMonth()+meses);
 
@@ -105,9 +127,5 @@ return lista;
 function formatar(data){
 
 return data.toLocaleDateString('pt-BR');
-
-}
-document.getElementById("afastFim").value="";
-document.getElementById("resultado").innerHTML="";
 
 }
