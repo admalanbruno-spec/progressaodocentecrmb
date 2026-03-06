@@ -1,7 +1,7 @@
 let dados = [];
 let afastamentos = [];
 
-fetch("dados.csv")
+fetch("dados.csv.csv")
 .then(response => response.text())
 .then(text => {
     let linhas = text.split("\n");
