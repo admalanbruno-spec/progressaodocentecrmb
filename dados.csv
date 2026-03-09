@@ -1,12 +1,16 @@
-﻿siape,nome,nivel,ultima_progressao
-3142624,Alan,B-001,2024-02-15
-3245653,Mayara,C-002,2025-10-09
-
-
-
-
-
-
-
+[
+{
+"siape":"123",
+"nome":"Servidor Teste",
+"nivel":"A1",
+"data_inicio_nivel":"2023-05-10"
+},
+{
+"siape":"456",
+"nome":"Maria Silva",
+"nivel":"B2",
+"data_inicio_nivel":"2022-08-15"
+}
+]
 
 
