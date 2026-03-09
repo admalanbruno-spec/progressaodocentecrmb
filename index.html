@@ -16,8 +16,8 @@
 <label>Matrícula SIAPE</label>
 <input id="siape" type="text" placeholder="Digite sua matrícula">
 
-<label>
-<input type="checkbox" id="temAfastamento" onchange="toggleAfastamento()">
+<label class="check">
+<input type="checkbox" id="temAfastamento">
 Possuo afastamentos que interrompem o interstício
 </label>
 
@@ -26,17 +26,13 @@ Possuo afastamentos que interrompem o interstício
 <h3>Afastamento</h3>
 
 <label>Tipo de afastamento</label>
-
 <select id="tipoAfastamento">
-
 <option value="">Selecione</option>
-
 <option>Licença para tratar de interesses particulares</option>
 <option>Licença para atividade política</option>
 <option>Licença para acompanhar cônjuge</option>
 <option>Afastamento sem remuneração</option>
 <option>Suspensão disciplinar</option>
-
 </select>
 
 <label>Data início</label>
@@ -47,7 +43,7 @@ Possuo afastamentos que interrompem o interstício
 
 </div>
 
-<button onclick="consultar()">Consultar progressão</button>
+<button id="btnConsultar">Consultar progressão</button>
 
 </div>
 
